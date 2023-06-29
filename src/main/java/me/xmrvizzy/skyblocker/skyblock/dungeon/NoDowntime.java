@@ -29,7 +29,7 @@ public class NoDowntime extends ChatPatternListener {
                 "|You are not a party leader\\." +
                 "|.* has left the party\\." +
                 "|(.*) joined the party\\." +
-                "|([\\[A-z+\\]]* )?([A-z0-9_]*): !dt"
+                "|(.*): !dt"
                 +"|                            Team Score: (.*))$");
 
         this.active = false;
