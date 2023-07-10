@@ -1,5 +1,6 @@
 package me.xmrvizzy.skyblocker.config;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
@@ -10,8 +11,6 @@ import me.xmrvizzy.skyblocker.SkyblockerMod;
 import me.xmrvizzy.skyblocker.chat.ChatFilterResult;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 
 import java.util.ArrayList;
@@ -29,6 +28,10 @@ public class SkyblockerConfig implements ConfigData {
     @ConfigEntry.Category("locations")
     @ConfigEntry.Gui.TransitiveObject
     public Locations locations = new Locations();
+
+    @ConfigEntry.Category("slayer")
+    @ConfigEntry.Gui.TransitiveObject
+    public Slayer slayer = new Slayer();
 
     @ConfigEntry.Category("quickNav")
     @ConfigEntry.Gui.TransitiveObject
@@ -171,6 +174,11 @@ public class SkyblockerConfig implements ConfigData {
         @ConfigEntry.Gui.CollapsibleObject()
         public Hitbox hitbox = new Hitbox();
 
+        @ConfigEntry.Gui.Tooltip()
+        @ConfigEntry.Category("titleContainer")
+        @ConfigEntry.Gui.CollapsibleObject()
+        public TitleContainer titleContainer = new TitleContainer();
+
         @ConfigEntry.Gui.Excluded
         public List<Integer> lockedSlots = new ArrayList<>();
     }
@@ -178,7 +186,7 @@ public class SkyblockerConfig implements ConfigData {
     public static class TabHudConf {
         public boolean tabHudEnabled = true;
 
-        @ConfigEntry.BoundedDiscrete(min=10, max=200)
+        @ConfigEntry.BoundedDiscrete(min = 10, max = 200)
         @ConfigEntry.Gui.Tooltip()
         public int tabHudScale = 100;
     }
@@ -243,6 +251,45 @@ public class SkyblockerConfig implements ConfigData {
         public boolean oldLeverHitbox = false;
     }
 
+    public static class TitleContainer {
+        @ConfigEntry.BoundedDiscrete(min = 30, max = 140)
+        public float titleContainerScale = 100;
+        public int x = 540;
+        public int y = 10;
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
+        public Direction direction = Direction.HORIZONTAL;
+        @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.DROPDOWN)
+        public Alignment alignment = Alignment.MIDDLE;
+    }
+
+    public enum Direction {
+        HORIZONTAL,
+        VERTICAL;
+
+        @Override
+        public String toString() {
+            return switch (this) {
+                case HORIZONTAL -> "Horizontal";
+                case VERTICAL -> "Vertical";
+            };
+        }
+    }
+
+    public enum Alignment {
+        LEFT,
+        RIGHT,
+        MIDDLE;
+
+        @Override
+        public String toString() {
+            return switch (this) {
+                case LEFT -> "Left";
+                case RIGHT -> "Right";
+                case MIDDLE -> "Middle";
+            };
+        }
+    }
+
     public static class RichPresence {
         public boolean enableRichPresence = false;
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
@@ -269,6 +316,8 @@ public class SkyblockerConfig implements ConfigData {
 
     public static class ItemTooltip {
         public boolean enableNPCPrice = true;
+        @ConfigEntry.Gui.Tooltip
+        public boolean enableMotesPrice = true;
         public boolean enableAvgBIN = true;
         @ConfigEntry.Gui.EnumHandler(option = ConfigEntry.Gui.EnumHandler.EnumDisplayOption.BUTTON)
         @ConfigEntry.Gui.Tooltip()
@@ -290,6 +339,10 @@ public class SkyblockerConfig implements ConfigData {
         @ConfigEntry.Category("dwarvenmines")
         @ConfigEntry.Gui.CollapsibleObject()
         public DwarvenMines dwarvenMines = new DwarvenMines();
+
+        @ConfigEntry.Category("rift")
+        @ConfigEntry.Gui.CollapsibleObject()
+        public Rift rift = new Rift();
     }
 
     public static class Dungeons {
@@ -345,7 +398,7 @@ public class SkyblockerConfig implements ConfigData {
         CLASSIC;
 
         @Override
-		public String toString() {
+        public String toString() {
             return switch (this) {
                 case SIMPLE -> "Simple";
                 case FANCY -> "Fancy";
@@ -357,6 +410,42 @@ public class SkyblockerConfig implements ConfigData {
     public static class Barn {
         public boolean solveHungryHiker = true;
         public boolean solveTreasureHunter = true;
+    }
+
+    public static class Rift {
+        public boolean mirrorverseWaypoints = true;
+        @ConfigEntry.BoundedDiscrete(min = 0, max = 5)
+        @ConfigEntry.Gui.Tooltip
+        public int mcGrubberStacks = 0;
+    }
+
+    public static class Slayer {
+        @ConfigEntry.Category("vampire")
+        @ConfigEntry.Gui.CollapsibleObject()
+        public VampireSlayer vampireSlayer = new VampireSlayer();
+    }
+
+    public static class VampireSlayer {
+        public boolean enableEffigyWaypoints = true;
+        public boolean compactEffigyWaypoints;
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        @ConfigEntry.Gui.Tooltip()
+        public int effigyUpdateFrequency = 5;
+        public boolean enableHolyIceIndicator = true;
+        public int holyIceIndicatorTickDelay = 10;
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        @ConfigEntry.Gui.Tooltip()
+        public int holyIceUpdateFrequency = 5;
+        public boolean enableHealingMelonIndicator = true;
+        public float healingMelonHealthThreshold = 4F;
+        public boolean enableSteakStakeIndicator = true;
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        @ConfigEntry.Gui.Tooltip()
+        public int steakStakeUpdateFrequency = 5;
+        public boolean enableManiaIndicator = true;
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        @ConfigEntry.Gui.Tooltip()
+        public int maniaUpdateFrequency = 5;
     }
 
     public static class Messages {
@@ -410,11 +499,8 @@ public class SkyblockerConfig implements ConfigData {
     private static LiteralArgumentBuilder<FabricClientCommandSource> optionsLiteral(String name) {
         return literal(name).executes(context -> {
             // Don't immediately open the next screen as it will be closed by ChatScreen right after this command is executed
-            SkyblockerMod.getInstance().scheduler.schedule(() -> {
-                Screen a = AutoConfig.getConfigScreen(SkyblockerConfig.class, null).get();
-                MinecraftClient.getInstance().setScreen(a);
-            }, 0);
-            return 1;
+            SkyblockerMod.getInstance().scheduler.queueOpenScreen(AutoConfig.getConfigScreen(SkyblockerConfig.class, null));
+            return Command.SINGLE_SUCCESS;
         });
     }
 

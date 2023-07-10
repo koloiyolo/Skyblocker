@@ -27,8 +27,8 @@ public class Reparty extends ChatPatternListener {
     public Reparty() {
         super("^(?:You are not currently in a party\\." +
                 "|Party (?:Membe|Moderato)rs(?: \\(([0-9]+)\\)|:( .*))" +
-                "|([\\[A-z+\\]]* )?(?<disband>[A-z0-9_]*) has disbanded .*" +
-                "|.*\n([\\[A-z+\\]]* )?(?<invite>[A-z0-9_]*) has invited you to join their party!" +
+                "|([\\[A-z+\\]]* )?(?<disband>.*) has disbanded .*" +
+                "|.*\n([\\[A-z+\\]]* )?(?<invite>.*) has invited you to join their party!" +
                 "\nYou have 60 seconds to accept. Click here to join!\n.*)$");
 
         this.repartying = false;
@@ -57,7 +57,7 @@ public class Reparty extends ChatPatternListener {
             }
         } else if (matcher.group("disband") != null && !matcher.group("disband").equals(client.getSession().getUsername())) {
             partyLeader = matcher.group("disband");
-            SkyblockerMod.getInstance().scheduler.schedule(() -> partyLeader = null, 51);
+            SkyblockerMod.getInstance().scheduler.schedule(() -> partyLeader = null, 61);
             return false;
         } else if (matcher.group("invite") != null && matcher.group("invite").equals(partyLeader)) {
             String command = "/party accept " + partyLeader;

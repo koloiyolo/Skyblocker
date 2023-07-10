@@ -11,7 +11,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -53,7 +52,7 @@ public abstract class InGameHudMixin {
 
     @Inject(method = "setOverlayMessage(Lnet/minecraft/text/Text;Z)V", at = @At("HEAD"), cancellable = true)
     private void skyblocker$onSetOverlayMessage(Text message, boolean tinted, CallbackInfo ci) {
-        if (!Utils.isOnSkyblock() || !SkyblockerConfig.get().general.bars.enableBars)
+        if (!Utils.isOnSkyblock() || !SkyblockerConfig.get().general.bars.enableBars || Utils.isInTheRift())
             return;
         String msg = message.getString();
         String res = statusBarTracker.update(msg, SkyblockerConfig.get().messages.hideMana);
@@ -84,7 +83,7 @@ public abstract class InGameHudMixin {
 
     @Inject(method = "renderExperienceBar", at = @At("HEAD"), cancellable = true)
     private void skyblocker$renderExperienceBar(DrawContext context, int x, CallbackInfo ci) {
-        if (Utils.isOnSkyblock() && SkyblockerConfig.get().general.bars.enableBars)
+        if (Utils.isOnSkyblock() && SkyblockerConfig.get().general.bars.enableBars && !Utils.isInTheRift())
             ci.cancel();
     }
 
@@ -103,7 +102,7 @@ public abstract class InGameHudMixin {
 
     @Inject(method = "renderMountHealth", at = @At("HEAD"), cancellable = true)
     private void skyblocker$renderMountHealth(DrawContext context, CallbackInfo ci) {
-        if (Utils.isOnSkyblock() && SkyblockerConfig.get().general.bars.enableBars)
+        if (Utils.isOnSkyblock() && SkyblockerConfig.get().general.bars.enableBars && !Utils.isInTheRift())
             ci.cancel();
     }
 }

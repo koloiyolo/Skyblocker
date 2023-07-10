@@ -2,6 +2,7 @@ package me.xmrvizzy.skyblocker.skyblock;
 
 import me.xmrvizzy.skyblocker.SkyblockerMod;
 import me.xmrvizzy.skyblocker.config.SkyblockerConfig;
+import me.xmrvizzy.skyblocker.utils.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -39,7 +40,7 @@ public class FancyStatusBars {
 
     public boolean render(DrawContext context, int scaledWidth, int scaledHeight) {
         var player = client.player;
-        if (!SkyblockerConfig.get().general.bars.enableBars || player == null)
+        if (!SkyblockerConfig.get().general.bars.enableBars || player == null || Utils.isInTheRift())
             return false;
         anchorsX[0] = scaledWidth / 2 - 91;
         anchorsY[0] = scaledHeight - 33;
@@ -70,10 +71,12 @@ public class FancyStatusBars {
                 moveBar(i, configAnchorNum);
         }
 
-        for (var bar : bars)
+        for (var bar : bars) {
             bar.draw(context);
-        for (var bar : bars)
+        }
+        for (var bar : bars) {
             bar.drawText(context);
+        }
         return true;
     }
 
@@ -149,19 +152,23 @@ public class FancyStatusBars {
 
             // Draw the background for the bar
             context.drawTexture(BARS, anchorsX[anchorNum] + offsetX + 10, anchorsY[anchorNum], 10, v, 2, 9);
-            for (int i = 2; i < bar_width - 2; i += 58)
+            for (int i = 2; i < bar_width - 2; i += 58) {
                 context.drawTexture(BARS, anchorsX[anchorNum] + offsetX + 10 + i, anchorsY[anchorNum], 12, v, Math.min(58, bar_width - 2 - i), 9);
+            }
             context.drawTexture(BARS, anchorsX[anchorNum] + offsetX + 10 + bar_width - 2, anchorsY[anchorNum], 70, v, 2, 9);
 
             // Draw the filled part of the bar
             for (int i = 0; i < fill.length; i++) {
                 int fill_width = this.fill[i] * (bar_width - 2) / 100;
-                if (fill_width >= 1)
-                	context.drawTexture(BARS, anchorsX[anchorNum] + offsetX + 11, anchorsY[anchorNum], 72 + i*60, v, 1, 9);
-                for (int j = 1; j < fill_width - 1; j += 58)
-                	context.drawTexture(BARS, anchorsX[anchorNum] + offsetX + 11 + j, anchorsY[anchorNum], 73 + i*60, v, Math.min(58, fill_width - 1 - j), 9);
-                if (fill_width == bar_width - 2)
-                	context.drawTexture(BARS, anchorsX[anchorNum] + offsetX + 11 + fill_width - 1, anchorsY[anchorNum], 131 + i*60, v, 1, 9);
+                if (fill_width >= 1) {
+                    context.drawTexture(BARS, anchorsX[anchorNum] + offsetX + 11, anchorsY[anchorNum], 72 + i * 60, v, 1, 9);
+                }
+                for (int j = 1; j < fill_width - 1; j += 58) {
+                    context.drawTexture(BARS, anchorsX[anchorNum] + offsetX + 11 + j, anchorsY[anchorNum], 73 + i * 60, v, Math.min(58, fill_width - 1 - j), 9);
+                }
+                if (fill_width == bar_width - 2) {
+                    context.drawTexture(BARS, anchorsX[anchorNum] + offsetX + 11 + fill_width - 1, anchorsY[anchorNum], 131 + i * 60, v, 1, 9);
+                }
             }
         }
 

@@ -30,6 +30,6 @@ public class AcceptRepartyTest extends ChatPatternListenerTest<Reparty> {
                         "\nYou have 60 seconds to accept. Click here to join!" +
                         "\n-----------------------------------------------------",
                 /* group: */ "invite",
-        /* expect: */ "1wolvesgaming");
+                /* expect: */ "1wolvesgaming");
     }
 }
